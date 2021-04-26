@@ -1,22 +1,45 @@
-import React, { Fragment } from 'react';
+import { Fragment, FC, SetStateAction, Dispatch, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
 import { Dialog, Transition } from '@headlessui/react';
-import { IFormInput, IModalProps } from '../interfaces/interfaces';
+
+import { IClient } from '../types/types';
 import { addNewClient } from '../graphql/addClient';
 import { updateCurrentClient } from '../graphql/updateClient';
 
-export const Modal: React.FC<IModalProps> = ({
+interface IModalProps {
+  open: boolean;
+  hide: () => void;
+  client: IClient | null;
+  refetch: () => void;
+  setCurrentClient: Dispatch<SetStateAction<IClient | null>>;
+}
+
+interface IFormInput {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  avatarUrl: string;
+}
+
+export const Modal: FC<IModalProps> = ({
   open,
   hide,
   client,
+  setCurrentClient,
   refetch,
 }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<IFormInput>();
+
+  useEffect(() => {
+    reset();
+    setCurrentClient(client)
+  }, [client, setCurrentClient, reset]);
 
   const add = useMutation(addNewClient);
   const update = useMutation(updateCurrentClient);
@@ -31,6 +54,8 @@ export const Modal: React.FC<IModalProps> = ({
   };
 
   const clear = () => {
+    setCurrentClient(null);
+    reset();
     refetch();
     hide();
   };
@@ -85,7 +110,7 @@ export const Modal: React.FC<IModalProps> = ({
                 </div>
               </div>
               <form className='px-4' onSubmit={handleSubmit(onSubmit)}>
-                <div className='mb-4 flex justify-center items-center'>
+                <div className='mb-4 flex flex-col'>
                   <input
                     className='px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full'
                     placeholder='First Name'
@@ -102,7 +127,7 @@ export const Modal: React.FC<IModalProps> = ({
                   )}
                 </div>
 
-                <div className='mb-4 flex justify-center items-center'>
+                <div className='mb-4 flex flex-col'>
                   <input
                     className='px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full'
                     placeholder='Last Name'
@@ -119,7 +144,7 @@ export const Modal: React.FC<IModalProps> = ({
                   )}
                 </div>
 
-                <div className='mb-4 flex justify-center items-center'>
+                <div className='mb-4 flex flex-col'>
                   <input
                     className='px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full'
                     placeholder='Phone number'
@@ -130,7 +155,7 @@ export const Modal: React.FC<IModalProps> = ({
                   {errors?.phone && <p className='text-red-800'>Only numbers</p>}
                 </div>
 
-                <div className='mb-4 flex justify-center items-center'>
+                <div className='mb-4 flex flex-col'>
                   <input
                     className='px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full'
                     placeholder='Link to Avatar'

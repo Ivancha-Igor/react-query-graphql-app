@@ -1,6 +1,6 @@
-import React from 'react';
+import { FC } from 'react';
 
-export const Loading: React.FC = () => (
+export const Loading: FC = () => (
   <div className='border border-light-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto flex justify-center items-center'>
     <svg
       xmlns='http://www.w3.org/2000/svg'
